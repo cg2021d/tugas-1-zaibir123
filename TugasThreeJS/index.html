@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Geometry</title>
+	<script src="three.min.js"></script>
+	<style>
+		html,
+		body {
+			background: black;
+			height: 100%;
+			margin: 0;
+		}
+
+		#myCanvas {
+			width: 100vw;
+			height: 70vh;
+		}
+
+		.container {
+			font-family: "times new roman", sans-serif;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding-top: 24px;
+		}
+
+		select {
+			outline: none;
+			font-size: 50px;
+			background: white;
+			border-radius: 0.2rem;
+		}
+	</style>
+
+<div class="container">
+    <h1 style="color: white;">Andymas Narendra Bagaskara - 05111940000192</h1>
+    <h2 style="color: white;font-size: 100px;">Tugas Grafkom D Threejs</h2>
+    <select name="light" id="light">
+        <option value="0">Directional Light</option>
+        <option value="1">Ambient Light</option>
+        <option value="2">Point Light</option>
+        <option value="3">Hemisphere Light</option>
+        <option value="4">Spotlight</option>
+    </select>
+    <!-- <canvas id="c"></canvas> -->
+</div>
+
+</head>
+
+<body>
+	
+	<canvas id="c"></canvas>
+    <script src="three.min.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
+
+
+<script>    
+    let scene, camera, renderer, cube, cone, octahedron, Ico, torusKnot, light, lighting;
+    
+    let createCube = function () {
+        let geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({color: 0x44aa88, wireframe: true});  // greenish blue
+        cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        cube.position.x = 2;
+    };
+
+    let createCone = function () {
+        const radius = 1;
+        const height = 2;
+        const radialSegments = 30;
+        const geometry = new THREE.ConeGeometry(radius, height, radialSegments);
+        const material = new THREE.MeshPhongMaterial({color: "#023", wireframe: false});
+        cone = new THREE.Mesh(geometry, material);
+        scene.add(cone);
+        cone.position.x = -2;
+    }
+
+    let createOctahedron = function () {
+        const radius = 1;  
+        const geometry = new THREE.OctahedronGeometry(radius, 0);
+        const material = new THREE.MeshPhongMaterial({color: "#3CDB00", wireframe: false});
+        octahedron = new THREE.Mesh(geometry, material);
+        scene.add(octahedron);
+        octahedron.position.x = 0;
+    }
+
+    let createIcosahedron = function (){
+        const radius = 0.7;
+        const geometry = new THREE.IcosahedronGeometry(radius);
+        const material = new THREE.MeshPhongMaterial({color: "#C92D0C", wireframe: false});
+        Ico = new THREE.Mesh(geometry, material);
+        scene.add(Ico);
+        Ico.position.x = -4;
+
+    }
+    
+
+    let createTorusKnot = function () {
+        const radius = 0.7;  
+        const tubeRadius = 0.3;  
+        const radialSegments = 8;  
+        const tubularSegments = 64;  
+        const p = 2;  
+        const q = 3;  
+        const geometry = new THREE.TorusKnotGeometry(
+        radius, tubeRadius, tubularSegments, radialSegments, p, q);
+        const material = new THREE.MeshLambertMaterial({color: "#FFFFFF", wireframe: true});
+        torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+        torusKnot.position.x = 5;
+        torusKnot.position.y = -2;
+    }
+
+    let init = function () {
+            // 1. create the scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color("#696969");
+
+            // 2. create an locate the camera       
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight,
+                    1, 1000);
+            camera.position.z = 5;
+
+            // 3. create an locate the object on the scene           
+            createCube();
+            createCone();
+            createOctahedron();
+            createIcosahedron();
+            createTorusKnot();
+            // createLight();
+
+            const dir = new THREE.DirectionalLight(0xffffff, 1);
+            dir.position.set(-5, 5, 5);
+            const ambient = new THREE.AmbientLight(0xffffff, 1);
+            ambient.position.set(0, 10, 0);
+            const point = new THREE.PointLight(0xffffff, 1, 100);
+            point.position.set(5, 5, 5);
+            const hemis = new THREE.HemisphereLight(0xffffff, '#3B82F6', 0.8);
+            hemis.position.set(0, 10, 0);
+            const spot = new THREE.SpotLight(0xffffff, 1, 50);
+            spot.position.set(0, 5, 5);
+
+            const lights = [dir, ambient, point, hemis, spot];
+            lights.forEach((light) => {
+                scene.add(light);
+            });
+
+            lights.forEach((light) => {
+                light.visible = false;
+            });
+            lights[0].visible = true;
+
+            const drop = document.getElementById('light');
+            drop.addEventListener('change', (e) => {
+                const selected = e.target.value;
+                lights.forEach((light) => {
+                    light.visible = false;
+                });
+                lights[selected].visible = true;
+            });
+
+            // 4. create the renderer     
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            document.body.appendChild(renderer.domElement);
+
+    };
+    speed = 0.03;
+    speed2 = 0.03;
+    // main animation loop - calls 50-60 in a second.
+    let mainLoop = function () {
+        cube.position.x += speed;
+        cone.position.y += speed;
+        octahedron.position.x += speed2;
+        octahedron.position.y += speed2;
+        Ico.position.y += speed;
+        // console.log("x", cube.position.x)
+        if(cube.position.x > 5)
+        {
+            speed = -0.03;
+        }
+        if(cube.position.x < -5)
+        {
+            speed = 0.03;
+        }
+        if(cone.position.y > 4)
+        {
+            speed = -0.03;
+        }
+        if(cone.position.y < -3)
+        {
+            speed = 0.03;
+        }
+        if(octahedron.position.x > 5)
+        {
+            speed2 = -0.05;
+        }
+        if(octahedron.position.x < -5)
+        {
+            speed2 = 0.05;
+        }
+        if(octahedron.position.y > 4)
+        {
+            speed2 = -0.01;
+        }
+        if(octahedron.position.y < -3)
+        {
+            speed2 = 0.01;
+        }
+        if(Ico.position.y > 4)
+        {
+            speed = -0.03;
+        }
+        if(Ico.position.y < -3)
+        {
+            speed = 0.03;
+        }
+        octahedron.rotation.x += 0.01;
+        octahedron.rotation.y += 0.01;
+        cube.rotation.y += 0.01;
+        cube.rotation.z += 0.01;
+        cone.rotation.x += 0.01;
+        cone.rotation.y += 0.01;
+        cone.rotation.z += 0.01;
+        torusKnot.rotation.x += 0.02;
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    };
+    init();
+    mainLoop();
+</script>
