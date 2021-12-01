@@ -3,7 +3,7 @@ Nama: Andymas Narendra Bagaskara
 NRP : 05111940000192
 
 # Three.js
-Control,Texture, panorama,loading model
+Control,Texture, panorama,loading model,Fog,Shadows
 
 
 # Deployment
